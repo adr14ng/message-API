@@ -1,5 +1,11 @@
 # Notes
 
+# Architecture 
+    - Hosted on AWS
+    - User makes call to API => (API Gateway) API Gateway handles the request (GET/POST) and calls lambda to process => (Lambda) handles request 
+    and processes data and interacts with DynmoDB as needed => (DynamoDB) DynamDB stores or gets the necessary information => Lastly Lambda serves back the response to the user via API Gateway
+    
+
 # What is the message object going to look like? What fields does it contain?
 Object: Message
 Fields: 
