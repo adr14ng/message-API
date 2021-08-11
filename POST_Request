@@ -1,0 +1,20 @@
+const AWS = require('aws-sdk');
+const dynamoDB = new AWS.DynamoDB();
+
+exports.handler = async (event, context, callback) => {
+  
+  //This function will insert the message into dynamDB
+  async function insertMessage(event) {
+
+    const dateVal = new Date().toISOString();
+    await dynamoDB.executeStatement(
+      {
+        Statement: `INSERT INTO messageTable VALUE {'messageID': '${context.awsRequestId}', 'senderID': '${event.senderID}', 'receiverID': '${event.receiverID}','messageVal':'${event.messageVal}', 'dateVal': '${dateVal}'}`
+      }).promise();
+  };
+      
+
+    await insertMessage(event);
+    
+    return {status:200};
+};

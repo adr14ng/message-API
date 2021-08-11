@@ -1,0 +1,73 @@
+//GET Request
+const AWS = require('aws-sdk');
+const dynamoDB = new AWS.DynamoDB();
+const moment = require('moment');
+
+exports.handler = async (event, context, callback) => {
+  
+    //This function will execute the partiQL statement and retrieve the records
+    async function getMessage(senderID, receiverID) {
+        const statement = `SELECT * FROM messageTable WHERE "senderID" = '${senderID}' AND "receiverID" = '${receiverID}'`;
+        const results = await dynamoDB.executeStatement({Statement: statement}).promise();
+        return results;
+    };
+
+    //Date Sortinging function
+    //TODO: Data is not being sorted correctly, this needs to be investigated and fixed
+    let sortData = (data) => {
+      let ordered = {};
+      let compareFunction = function(a, b) {
+        return new Date(data[a]['dateVal']['S']).getTime() - new Date(data[b]['dateVal']['S']).getTime();
+      };
+      Object.keys(data).sort(compareFunction).forEach(function(key) {
+        ordered[key] = data[key];
+      });
+      return ordered;
+    }
+    
+    //A filtering function to get all records with a timestamp greater than 30 days ago
+    let last30DaysMessages = (orderedMessagesByDate) => {
+        const thirtyDaysAgo = moment().subtract(30, 'days');
+        const result = orderedMessagesByDate.filter(message => moment(message.dateVal.S).isAfter(thirtyDaysAgo, 'day'));
+
+        return result;
+    };
+    
+    //A "request handler" that will handle the request based on the URL parameter
+    let getMessagesResult = (messageReq, latestMessages) => {
+      if(messageReq == "last100"){
+        
+        return latestMessages.slice(0,2);
+        
+      } else if (messageReq == "last30Days"){
+  
+        return last30DaysMessages(latestMessages);
+  
+      } else {
+        throw "Error, bad request";
+      }
+    };
+    
+    // let messageRequest = event['queryStringParameters']['messageReq'];
+    // let senderID = event['queryStringParameters']['senderID'];
+    // let receiverID = event['queryStringParameters']['receiverID'];
+    
+    //Hardcoded values for testing
+    let messageRequest = "last30Days";
+    let senderID = "1";
+    let receiverID = "2";
+
+
+    let conversation = await getMessage(senderID, receiverID);
+    
+    let latestMessagesArray = sortData(conversation.Items);
+    let newArrayDataOfOjbect = Object.values(latestMessagesArray);
+    
+    //The proper request will now be routed back to the user through the response body
+    callback(null,  {
+    'statusCode': 200,
+    'headers': {'Content-Type': 'application/json'},
+    'body': JSON.stringify(getMessagesResult(messageRequest, newArrayDataOfOjbect))
+    });
+      
+};
