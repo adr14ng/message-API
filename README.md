@@ -111,6 +111,22 @@ INSERT INTO messageTable VALUE {
             infrastructure does not fail
                 -API Gateway
                 -Lambda
+                
+ # How to Use:
+ POST:
+ Works as a traditional post request, must have necessary information.
+    - SenderID (ID)
+    - ReceiverID (ID)
+    - Message (RichText)
+ 
+ GET:
+ Get has 3 URL Parameters:
+    - SenderID
+    - ReceiverID
+    - messageReq
+        -"last100"
+        -"last30Days"
+    
     
 
     
