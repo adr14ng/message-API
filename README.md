@@ -113,19 +113,19 @@ INSERT INTO messageTable VALUE {
                 -Lambda
                 
  # How to Use:
- POST:
- Works as a traditional post request, must have necessary information.
-    - SenderID (ID)
-    - ReceiverID (ID)
-    - Message (RichText)
+    POST:
+    Works as a traditional post request, must have necessary information.
+        - SenderID (ID)
+        - ReceiverID (ID)
+        - Message (RichText)
  
- GET:
- Get has 3 URL Parameters:
-    - SenderID
-    - ReceiverID
-    - messageReq
-        -"last100"
-        -"last30Days"
+    GET:
+    Get has 3 URL Parameters:
+        - SenderID
+        - ReceiverID
+        - messageReq
+            -"last100"
+            -"last30Days"
     
     
 
